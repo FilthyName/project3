@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+email-validator
+python-jose
+passlib
+python-multipart
+redis
+bcrypt==4.0.1
