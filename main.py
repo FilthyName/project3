@@ -86,7 +86,11 @@ class StatsOut(BaseModel):
 async def startup():
     global redis_client
     Base.metadata.create_all(bind=engine)
-    redis_client = Redis.from_url(REDIS_URL, decode_responses=True)
+    try:
+        redis_client = Redis.from_url(REDIS_URL, decode_responses=True)
+        await redis_client.ping()
+    except Exception:
+        redis_client = None
 
 @app.on_event("shutdown")
 async def shutdown():
@@ -284,13 +288,16 @@ async def delete_link(short_code: str, db: Session = Depends(get_db), current_us
 async def redirect_to_original(short_code: str, db: Session = Depends(get_db)):
     cache_key = f"redirect:{short_code}"
     if redis_client:
-        cached_url = await redis_client.get(cache_key)
-        if cached_url:
-            link = get_link_by_code(db, short_code)
-            if link:
-                link.clicks += 1
-                db.commit()
-            return RedirectResponse(url=cached_url, status_code=307)
+        try:
+            cached_url = await redis_client.get(cache_key)
+            if cached_url:
+                link = get_link_by_code(db, short_code)
+                if link:
+                    link.clicks += 1
+                    db.commit()
+                return RedirectResponse(url=cached_url, status_code=307)
+        except Exception:
+            pass
     link = get_link_by_code(db, short_code)
     if not link:
         raise HTTPException(status_code=404, detail="Link not found")
@@ -299,5 +306,8 @@ async def redirect_to_original(short_code: str, db: Session = Depends(get_db)):
     link.clicks += 1
     db.commit()
     if redis_client:
-        await redis_client.setex(cache_key, 300, link.original_url)
+        try:
+            await redis_client.setex(cache_key, 300, link.original_url)
+        except Exception:
+            pass
     return RedirectResponse(url=link.original_url, status_code=307)
