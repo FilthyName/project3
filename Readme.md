@@ -56,8 +56,8 @@ http://localhost:8000/docs
 POST `/auth/register`
 
 {
-  "username": "test",
-  "email": "test@example.com",
+  "username": "MalyshevIvan",
+  "email": "AI2025@example.com",
   "password": "12345678"
 }
 
