@@ -1,4 +1,4 @@
-# URL Shortener API
+# PROJECT 3 - URL Shortener API
 
 REST API сервис для сокращения ссылок.
 Позволяет создавать короткие URL, выполнять редирект на оригинальные ссылки и управлять ссылками для зарегистрированных пользователей.
@@ -128,6 +128,24 @@ API доступен по ссылке:
 
 https://project3-whc8.onrender.com
 
+
+
 Документация:
 
 https://project3-whc8.onrender.com/docs
+
+---
+---
+
+# PROJECT 4 - Fast API testing
+
+Были добавлены файлы для тестов и чуть-чуть изменен файл main.py (буквально пару строк)
+
+---
+
+Отчет покрытия
+<img width="1236" height="340" alt="Screenshot 2026-03-20 at 14 29 20" src="https://github.com/user-attachments/assets/baaa1909-419b-4b1f-af63-9d3de2cedba2" />
+---
+
+Отчет нагрузки Locust со 100 пользователями и 7 spawnrate
+<img width="1470" height="956" alt="Screenshot 2026-03-20 at 14 37 48" src="https://github.com/user-attachments/assets/e05ef82c-e6f8-4757-9b73-1678c0f7fee2" />
