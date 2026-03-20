@@ -8,3 +8,7 @@ passlib
 python-multipart
 redis
 bcrypt==4.0.1
+pytest
+pytest-cov
+httpx
+locust

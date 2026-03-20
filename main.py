@@ -134,12 +134,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    if not token:
+        raise credentials_exception
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username = payload.get("sub")
         if username is None:
             raise credentials_exception
-    except JWTError:
+    except Exception:
         raise credentials_exception
     user = get_user_by_username(db, username)
     if not user:
@@ -214,6 +216,11 @@ async def create_short_link(payload: LinkCreate, db: Session = Depends(get_db), 
     db.refresh(link)
     return link
 
+@app.get("/links/search", response_model=list[LinkOut])
+def search_links(original_url: str, db: Session = Depends(get_db)):
+    links = db.query(Link).filter(Link.original_url == original_url).all()
+    return links
+
 @app.get("/links/{short_code}", response_model=LinkOut)
 async def get_link_info(short_code: str, db: Session = Depends(get_db)):
     cache_key = f"link:{short_code}"
@@ -247,11 +254,6 @@ def get_link_stats(short_code: str, db: Session = Depends(get_db), current_user:
         "created_at": link.created_at,
         "expires_at": link.expires_at,
     }
-
-@app.get("/links/search", response_model=list[LinkOut])
-def search_links(original_url: str, db: Session = Depends(get_db)):
-    links = db.query(Link).filter(Link.original_url == original_url).all()
-    return links
 
 
 @app.put("/links/{short_code}", response_model=LinkOut)
